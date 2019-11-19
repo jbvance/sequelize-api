@@ -30,11 +30,16 @@ app.use(function (req, res, next) {
   next();
 });
 
+const usersRouter = require('./routers/users');
+
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.set("host", process.env.OPENSHIFT_NODEJS_IP || "0.0.0.0");
 app.set("port", process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080);
+
+app.use('/users', usersRouter);
 
 app.get('/', (req, res, next) => {
     User.findAll()
@@ -65,7 +70,7 @@ models.sequelize.sync({ force: true })
       //console.log("NEW USER", user);
       return User.findOne({ where: { email: 'test@test.com'}})
     })
-     .then(addedUser => console.log("ADDED USER", addedUser));
+     .then(addedUser => console.log("ADDED USER", addedUser.serialize()));
       
 
 

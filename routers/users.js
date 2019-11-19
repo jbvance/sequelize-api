@@ -3,9 +3,18 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const router = express.Router();
 const jsonParser = bodyParser.json();
-const { User } = require('./models/User');
+const User  = require('../models').User;
 const { createAuthToken } = require('../utils');
 
+
+//TEST ONLY - retrieve users
+router.get('/', (req, res, next) => {
+    User.findAll()
+        .then(users => {
+            return res.status(200).json({ users });
+        })
+        .catch(err => next(err));
+});
 
 // Post to register a new user
 router.post('/', jsonParser, (req, res) => {
@@ -96,8 +105,7 @@ router.post('/', jsonParser, (req, res) => {
   firstName = firstName.trim();
   lastName = lastName.trim();
 
-  return User.find({email})
-    .count()
+  return User.count({where: { email }})
     .then(count => {
       if (count > 0) {
         // There is an existing user with the same email
@@ -136,4 +144,4 @@ router.post('/', jsonParser, (req, res) => {
     });
 });
 
-module.exports = {router};
+module.exports = router;

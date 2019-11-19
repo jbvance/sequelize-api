@@ -26,21 +26,21 @@ module.exports = function(db, DataTypes) {
      lastName: DataTypes.STRING
   });
   
-User.addHook('beforeCreate', (user, options) => {
-    return new Promise((resolve, reject) => {
-        if(user.changed('password')) {
-            User.hashPassword(user.password)
-            .then(hash => {
-                user.password = hash;
-                resolve();
-            })
-          } else {
-              resolve();
-          }
+// User.addHook('beforeCreate', (user, options) => {
+//     return new Promise((resolve, reject) => {
+//         if(user.changed('password')) {
+//             User.hashPassword(user.password)
+//             .then(hash => {
+//                 user.password = hash;
+//                 resolve();
+//             })
+//           } else {
+//               resolve();
+//           }
        
-    })
+//     })
     
-  });
+//   });
   
   User.prototype.serialize = function() {
   return {

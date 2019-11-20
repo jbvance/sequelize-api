@@ -13,10 +13,10 @@ module.exports = function(db, DataTypes) {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
-        validate: {
-            isLowercase: true,
-            isEmail: true
-        }
+        // validate: {
+        //     isLowercase: true,
+        //     isEmail: true
+        // }
   },
      password: {
         type: DataTypes.STRING,
@@ -40,6 +40,12 @@ module.exports = function(db, DataTypes) {
        
 //     })    
 //   });
+
+User.addHook('beforeSave', (user, options) => {
+  if (user.changed('email')) {
+    user.email = user.email.toLowerCase();
+  }
+});
   
   User.prototype.serialize = function() {
   return {

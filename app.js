@@ -49,8 +49,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set("host", process.env.OPENSHIFT_NODEJS_IP || "0.0.0.0");
 app.set("port", process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080);
 
-app.use('/users', usersRouter);
-app.use('/auth', authRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/auth', authRouter);
 
 app.get('/', (req, res, next) => {
     User.findAll()
@@ -62,7 +62,7 @@ app.get('/', (req, res, next) => {
 
 let server;
 
-function runServer() {
+function runServer() {  
   return new Promise((resolve, reject) => {
     models.sequelize.sync() 
     //models.sequelize.sync({ force: true })
@@ -99,6 +99,7 @@ function closeServer() {
 }
 
 if (require.main === module) {
+  console.log("RUNNING SERVER");
   runServer().catch(err => console.error(err));
 }
     

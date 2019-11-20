@@ -1,14 +1,17 @@
 'use strict';
 const express = require('express');
 const bodyParser = require('body-parser');
+const passport = require('passport');
 const router = express.Router();
 const jsonParser = bodyParser.json();
 const User  = require('../models').User;
 const { createAuthToken } = require('../utils');
 
+const jwtAuth = passport.authenticate('jwt', {session: false});
+
 
 //TEST ONLY - retrieve users
-router.get('/', (req, res, next) => {
+router.get('/', jwtAuth, (req, res, next) => {
     User.findAll()
         .then(users => {
             return res.status(200).json({ users });

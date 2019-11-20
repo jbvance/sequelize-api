@@ -38,8 +38,7 @@ module.exports = function(db, DataTypes) {
 //               resolve();
 //           }
        
-//     })
-    
+//     })    
 //   });
   
   User.prototype.serialize = function() {

@@ -60,29 +60,49 @@ app.get('/', (req, res, next) => {
         .catch(err => next(err));
 });
 
+let server;
 
-models.sequelize.sync() 
-//models.sequelize.sync({ force: true })
-    .then(() => {
-        app.listen(app.get("port"), () => {
-          console.log(
-            "%s App is running at http://localhost:%d in %s mode",
-            chalk.green("✓"),
-            app.get("port"),
-            app.get("env")
-          );
-          console.log("  Press CTRL-C to stop\n");
-        });
-        
-       //return User.create({ name: 'Max', email: 'test@test.com', password: 'password' })
-    })
+function runServer() {
+  return new Promise((resolve, reject) => {
+    models.sequelize.sync() 
+    //models.sequelize.sync({ force: true })
+        .then(() => {
+            server = app.listen(app.get("port"), () => {
+              console.log(
+                "%s App is running at http://localhost:%d in %s mode",
+                chalk.green("✓"),
+                app.get("port"),
+                app.get("env")
+              );
+              console.log("  Press CTRL-C to stop\n");
+            });
+            resolve();
+            
+           //return User.create({ name: 'Max', email: 'test@test.com', password: 'password' })
+        })
+        .catch(err => {
+          reject(err);
+        })
+  })      
+}
+
+function closeServer() {      
+    return new Promise((resolve, reject) => {
+      console.log('Closing server');
+      server.close(err => {
+        if (err) {
+          return reject(err);
+        }
+        resolve();
+      });
+    });    
+}
+
+if (require.main === module) {
+  runServer().catch(err => console.error(err));
+}
     
-    // .then(user => {
-    //   //console.log("NEW USER", user);
-    //   return User.findOne({ where: { email: 'test@test.com'}})
-    // })
-    //  .then(addedUser => console.log("ADDED USER", addedUser.serialize()));
-      
+module.exports = { app, runServer, closeServer };
 
 
 

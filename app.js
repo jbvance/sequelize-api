@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const chalk = require('chalk');
 const cors = require('cors');
+const passport = require('passport');
 
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
@@ -15,6 +16,9 @@ dotenv.config({ path: ".env" });
 const models = require('./models');
 //console.log("MODELS", models);
 const User = models.User;
+
+//Passport strategies
+const { localStrategy, jwtStrategy } = require('./config/passport-strategies');
 
 
 const app = express();
@@ -30,7 +34,13 @@ app.use(function (req, res, next) {
   next();
 });
 
+const jwtAuth = passport.authenticate('jwt', { session: false });
+
+passport.use(localStrategy);
+passport.use(jwtStrategy);
+
 const usersRouter = require('./routers/users');
+const authRouter = require('./routers/auth');
 
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -40,6 +50,7 @@ app.set("host", process.env.OPENSHIFT_NODEJS_IP || "0.0.0.0");
 app.set("port", process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080);
 
 app.use('/users', usersRouter);
+app.use('/auth', authRouter);
 
 app.get('/', (req, res, next) => {
     User.findAll()
@@ -50,8 +61,8 @@ app.get('/', (req, res, next) => {
 });
 
 
-//models.sequelize.sync() 
-models.sequelize.sync({ force: true })
+models.sequelize.sync() 
+//models.sequelize.sync({ force: true })
     .then(() => {
         app.listen(app.get("port"), () => {
           console.log(
@@ -63,14 +74,14 @@ models.sequelize.sync({ force: true })
           console.log("  Press CTRL-C to stop\n");
         });
         
-       return User.create({ name: 'Max', email: 'test@test.com', password: 'password' })
+       //return User.create({ name: 'Max', email: 'test@test.com', password: 'password' })
     })
     
-    .then(user => {
-      //console.log("NEW USER", user);
-      return User.findOne({ where: { email: 'test@test.com'}})
-    })
-     .then(addedUser => console.log("ADDED USER", addedUser.serialize()));
+    // .then(user => {
+    //   //console.log("NEW USER", user);
+    //   return User.findOne({ where: { email: 'test@test.com'}})
+    // })
+    //  .then(addedUser => console.log("ADDED USER", addedUser.serialize()));
       
 
 

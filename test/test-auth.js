@@ -12,7 +12,6 @@ dotenv.config({ path: ".env" });
 
 //load sequelize model
 const User = require('../models/index').User;
-console.log("GOT TO HERE IN TEST1234");
 
 const { app, runServer, closeServer } = require('../app');
 
